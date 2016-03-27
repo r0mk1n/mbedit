@@ -32,7 +32,7 @@ app.use( bodyParser.json() );
 
 
 // route for static data
-app.use( express.static('./public') );
+app.use( express.static('./views/public') );
 
 // route categories
 var categories = require( './app/routes/categories' )( app, express );
