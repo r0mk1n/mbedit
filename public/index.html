@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>MBEdit</title>
+    <meta property="author" content="@r0mk1n">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/alertify.min.css">
+    <link rel="stylesheet" href="./css/alertify-themes/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+    <div class="container-fluid" id="App"></div>
+
+    <script src="./js/jquery-2.2.2.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/pace.min.js"></script>
+    <script src="./js/underscore-min.js"></script>
+    <script src="./js/backbone-min.js"></script>
+    <script src="./js/alertify.min.js"></script>
+
+    <script src="./js/models/Level.js"></script>
+    <script src="./js/models/Category.js"></script>
+
+    <script src="./js/collections/CategoriesCollection.js"></script>
+    <script src="./js/collections/LevelsCollection.js"></script>
+
+    <script src="./js/views/CategoriesView.js"></script>
+    <script src="./js/views/ToolbarView.js"></script>
+    <script src="./js/views/App.js"></script>
+
+    <script>
+        var app;
+        $(document).ready(function() {
+            app = new AppView({
+                el: $('#App')
+            });
+        });
+    </script>
+</body>
+</html>

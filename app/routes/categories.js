@@ -9,18 +9,23 @@ module.exports = function( app, express ) {
     var router  = express.Router();
     var config  = require( '../../config/config' );
 
+    // category model
     var Category = require( '../models/category' );
 
     router.route('/')
         // get list of categories
         .get( function( req, res ) {
-            Category.find( {}, function( err, categories ) {
-                if ( err ) {
-                    res.status(403).json( { message: err } );
-                    return;
-                }
-                res.status(200).json( categories );
-            });
+            Category.find( {} )
+                .sort( {
+                    'order_id': 1
+                } )
+                .exec( function( err, categories ) {
+                    if ( err ) {
+                        res.status(403).json( { message: err } );
+                        return;
+                    }
+                    res.status(200).json( categories );
+                });
         })
         // adding new category
         .post( function( req, res ) {
@@ -70,11 +75,29 @@ module.exports = function( app, express ) {
                             res.status(403).json( { message: err } );
                             return;
                         }
+                        // @todo: set 0 to all levels with given category_id
+
                         res.status(200).json( {message: 'Category has been successfully deleted'} );
                     });
                 }
-
             });
+        });
+
+    router.route('/:id')
+        // get list of categories
+        .get( function( req, res ) {
+            if ( !req.params.id ) {
+                res.status(403).json( { message: 'Category not found' } );
+                return;
+            }
+            Category.findById( req.params.id )
+                .exec( function( err, category ) {
+                    if ( err ) {
+                        res.status(403).json( { message: err } );
+                        return;
+                    }
+                    res.status(200).json( category );
+                });
         });
 
     return router;

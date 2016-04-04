@@ -5,6 +5,9 @@
 'use strict';
 
 module.exports = {
-    database : 'mongodb://localhost/mblock',
-    is_dev   : true
+    is_dev      : true,
+
+    database    : 'mongodb://localhost/mblock',
+
+    server_port : 3000
 };

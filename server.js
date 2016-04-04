@@ -2,8 +2,9 @@
 
 var express         = require( 'express' );
 var bodyParser      = require( 'body-parser' );
-var config          = require( './config/config' );
 var mongoose        = require( 'mongoose' );
+
+var config          = require( './config/config' );
 
 if ( config.is_dev ) {
     var morgan          = require('morgan');
@@ -14,7 +15,7 @@ var app = new express();
 
 // use debug only for dev
 if ( config.is_dev ) {
-    app.use(morgan('dev'));
+    app.use( morgan( 'dev' ) );
 }
 
 // establish db connection
@@ -30,18 +31,21 @@ mongoose.connect( config.database, function( err ) {
 app.use( bodyParser.urlencoded({ extended: true }) );
 app.use( bodyParser.json() );
 
-
 // route for static data
-app.use( express.static('./views/public') );
+app.use( express.static( __dirname + '/public') );
+app.get( '/', function( req, res ) {
+    res.sendFile( __dirname + '/public/index.html' );
+});
 
 // route categories
-var categories = require( './app/routes/categories' )( app, express );
-app.use( '/categories', categories );
+app.use( '/categories', require( './app/routes/categories' )( app, express ) );
 
 // route levels
-var levels = require( './app/routes/levels' )( app, express );
-app.use( '/levels', levels );
+app.use( '/levels', require( './app/routes/levels' )( app, express ) );
 
-app.listen(3000, function() {
-    console.log('Server at port 3000 has running');
+// route single level
+app.use( '/level', require( './app/routes/level' )( app, express ) );
+
+app.listen( config.server_port, function() {
+    console.log( 'Server at port %d has running', config.server_port );
 });
