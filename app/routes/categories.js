@@ -41,47 +41,8 @@ module.exports = function( app, express ) {
                 res.status(200).json( { message: "New category has been successfully added" } );
             });
         })
-        // updating category
-        .put( function( req, res ) {
-            Category.findById( req.body.id, function( err, category ) {
-                if ( err ) {
-                    res.status( 403 ).json( { message: 'Category not found' } );
-                    return;
-                }
-                if ( category ) {
-                    _.merge( category, req.body );
-                    category.save( function( err ) {
-                        if ( err ) {
-                            res.status( 403 ).json( { message: err } );
-                            return;
-                        }
-                        res.status(200).json( category );
-                    })
-                } else {
-                    res.status( 403 ).json( { message: 'Category not found' } );
-                }
-            });
-        })
-        // delete category
-        .delete( function( req, res ) {
-            Category.findById( req.body.id, function( err, category ) {
-                if ( err ) {
-                    res.status( 403 ).json( { message: 'Category not found' } );
-                    return;
-                }
-                if ( category ) {
-                    category.remove( function( err ) {
-                        if ( err ) {
-                            res.status(403).json( { message: err } );
-                            return;
-                        }
-                        // @todo: set 0 to all levels with given category_id
 
-                        res.status(200).json( {message: 'Category has been successfully deleted'} );
-                    });
-                }
-            });
-        });
+
 
     router.route('/:id')
         // get list of categories
@@ -98,6 +59,48 @@ module.exports = function( app, express ) {
                     }
                     res.status(200).json( category );
                 });
+        })
+        // delete category
+        .delete( function( req, res ) {
+            Category.findById( req.params.id, function( err, category ) {
+                if ( err ) {
+                    res.status( 403 ).json( { message: 'Category not found' } );
+                    return;
+                }
+                if ( category ) {
+                    category.remove( function( err ) {
+                        if ( err ) {
+                            res.status(403).json( { message: err } );
+                            return;
+                        }
+                        // @todo: set 0 to all levels with given category_id
+
+                        res.status(200).json( {message: 'Category has been successfully deleted'} );
+                    });
+                }
+            });
+        })
+        // updating category
+        .put( function( req, res ) {
+            Category.findById( req.params.id, function( err, category ) {
+                if ( err ) {
+                    res.status( 403 ).json( { message: 'Category not found' } );
+                    return;
+                }
+                if ( category ) {
+                    console.log( req.body );
+                    _.merge( category, req.body );
+                    category.save( function( err ) {
+                        if ( err ) {
+                            res.status( 403 ).json( { message: err } );
+                            return;
+                        }
+                        res.status(200).json( category );
+                    })
+                } else {
+                    res.status( 403 ).json( { message: 'Category not found' } );
+                }
+            });
         });
 
     return router;

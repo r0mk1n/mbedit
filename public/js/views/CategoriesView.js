@@ -25,6 +25,8 @@ var CategoriesView = Backbone.View.extend({
      * @param el
      */
     initialize: function() {
+        var self = this;
+
         // create sidebar
         this.$el.append( _.template( this.templates.categories_list ) );
         this.$categoriesList = $('.categories-list');
@@ -36,6 +38,13 @@ var CategoriesView = Backbone.View.extend({
         // create categories model
         this.Categories = new CategoriesCollection();
         this.listenTo( this.Categories, 'sync', this.render );
+        //this.listenTo( this.Categories, 'all', function( data ) {
+        //    console.log(data);
+        //} );
+
+        $(document).on('click', '#categorySaveBtn', function() {
+            self.saveCategory();
+        });
 
         // load categories data
         this.Categories.fetch();
@@ -66,25 +75,96 @@ var CategoriesView = Backbone.View.extend({
 
     // private
 
+    /**
+     * Edit category click handler
+     * @param event
+     */
     onEditCategoryClick: function( event ) {
         var category_id = $( event.currentTarget ).closest('li').data('category-id');
-        this.$editModal.modal('show');
+
 
         var category = this.Categories.get( category_id );
         if ( category ) {
 
+            $('#category-id').val( category.attributes._id );
+            $('#category-alias').val( category.attributes.alias );
+            $('#category-name').val( category.attributes.name );
+            $('#category-order_id').val( category.attributes.order_id );
+
+            $('#categoryModalLabel').html( 'Edit category' );
+
+            this.$editModal.modal('show');
+        } else {
+            // show error
         }
     },
 
+    /**
+     * Delete category click handler
+     * @param event
+     */
     onDeleteCategoryClick: function( event ) {
+        var self = this;
         var category_id = $( event.currentTarget ).closest('li').data('category-id');
 
+        if ( confirm( 'Do you really want to delete this category' ) ) {
+            // remove from collection
+            this.Categories.get( category_id ).destroy( {
+                success: function( model, response, options ) {
+                    self.Categories.fetch();
+                },
+                error: function( model, xhr, options ) {
+                }
+            } );
+        }
     },
 
+    /**
+     * Add category click handler
+     * @param event
+     */
     onAddCategoryClick: function( event ) {
+        $('#category-id').val( '' );
+        $('#category-alias').val( '' );
+        $('#category-name').val( '' );
+        $('#category-order_id').val( '' );
 
+        $('#categoryModalLabel').html( 'Adding new category' );
+
+        this.$editModal.modal('show');
     },
 
+    /**
+     * Save category handler
+     * processing for add and edit
+     */
+    saveCategory: function() {
+        var self = this,
+            result = null;
+
+        var data = {
+            alias       : $('#category-alias').val(),
+            name        : $('#category-name').val(),
+            order_id    : $('#category-order_id').val()
+        };
+        if ( $('#category-id').val() ) {
+            data._id = $('#category-id').val();
+            var category = this.Categories.get( data._id );
+            category.set( data );
+            result = category.save();
+        } else {
+            result = this.Categories.add( data ).save();
+        }
+
+        if ( result ) {
+            self.$editModal.modal('hide');
+            self.Categories.fetch();
+        }
+    },
+
+    /**
+     * Event handlers
+     */
     events: {
         'click a.btn-edit-category'     : 'onEditCategoryClick',
         'click a.btn-delete-category'   : 'onDeleteCategoryClick',
@@ -95,6 +175,7 @@ var CategoriesView = Backbone.View.extend({
      * Templates for categories view
      */
     templates: {
+        // categiries list
         categories_list: '' +
             '<div class="side-nav">' +
                 '<ul class="nav navbar-nav categories-list">' +
@@ -110,6 +191,7 @@ var CategoriesView = Backbone.View.extend({
             '</div>' +
         '',
 
+        // category item
         category_item: '' +
             '<li data-category-id="<%= _id %>">' +
                 '<div class="btn-group pull-right">' +
@@ -123,6 +205,7 @@ var CategoriesView = Backbone.View.extend({
             '</li>' +
         '',
 
+        // category modal for add/edit
         category_edit_modal: '' +
             '<div class="modal fade" id="CategoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel">' +
                 '<div class="modal-dialog" role="document">' +
@@ -148,7 +231,7 @@ var CategoriesView = Backbone.View.extend({
                         '</div>' +
                         '<div class="modal-footer">' +
                             '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
-                            '<button type="button" class="btn btn-primary">Save changes</button>' +
+                            '<button type="button" class="btn btn-primary" id="categorySaveBtn">Save changes</button>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +

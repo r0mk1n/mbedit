@@ -121,3 +121,6 @@
 .pace.pace-inactive {
     display: none;
 }
+.form-control {
+    color: #666;
+}

@@ -9,5 +9,7 @@ var Category = Backbone.Model.extend({
         'order_id'  :  0
     },
 
-    idAttribute     : '_id'
+    idAttribute     : '_id',
+
+    //url             : '/categories'
 });
