@@ -1,4 +1,4 @@
-var Level = Backbone.Model.extend({
+var Levels = Backbone.Model.extend({
     defaults: {
         'category_id'   : 0,
         'data'          : '',

@@ -73,8 +73,47 @@ var CategoriesView = Backbone.View.extend({
         return _.template( this.templates.category_item )( item );
     },
 
-    // private
+    /**
+     * Save category handler
+     * processing for add and edit
+     */
+    saveCategory: function() {
+        var self = this,
+            result = null;
 
+        var data = {
+            alias       : $('#category-alias').val(),
+            name        : $('#category-name').val(),
+            order_id    : $('#category-order_id').val()
+        };
+        if ( $('#category-id').val() ) {
+            data._id = $('#category-id').val();
+            var category = this.Categories.get( data._id );
+            category.set( data );
+            result = category.save();
+        } else {
+            result = this.Categories.add( data ).save();
+        }
+
+        if ( result ) {
+            self.$editModal.modal('hide');
+            self.Categories.fetch();
+        }
+    },
+
+    /**
+     * Select category with given ID
+     * @param category_id
+     */
+    selectCategory: function( category_id ) {
+        this.trigger( 'Category.SELECT', {category_id: category_id} );
+        // clean prev selected category
+        $('.categories-list li').removeClass('active');
+        // adding 'active' class to selected category
+        $('.categories-list li[data-category-id='+category_id+']').addClass('active');
+    },
+
+    // event handlers //////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * Edit category click handler
      * @param event
@@ -134,41 +173,22 @@ var CategoriesView = Backbone.View.extend({
         this.$editModal.modal('show');
     },
 
-    /**
-     * Save category handler
-     * processing for add and edit
-     */
-    saveCategory: function() {
-        var self = this,
-            result = null;
 
-        var data = {
-            alias       : $('#category-alias').val(),
-            name        : $('#category-name').val(),
-            order_id    : $('#category-order_id').val()
-        };
-        if ( $('#category-id').val() ) {
-            data._id = $('#category-id').val();
-            var category = this.Categories.get( data._id );
-            category.set( data );
-            result = category.save();
-        } else {
-            result = this.Categories.add( data ).save();
-        }
-
-        if ( result ) {
-            self.$editModal.modal('hide');
-            self.Categories.fetch();
-        }
+    onSelectCategory: function( event ) {
+        var category_id = $(event.currentTarget).closest('li').attr('data-category-id');
+        this.selectCategory( category_id );
     },
+
+
 
     /**
      * Event handlers
      */
     events: {
-        'click a.btn-edit-category'     : 'onEditCategoryClick',
-        'click a.btn-delete-category'   : 'onDeleteCategoryClick',
-        'click a.btn-add-category'      : 'onAddCategoryClick'
+        'click a.btn-edit-category'             : 'onEditCategoryClick',
+        'click a.btn-delete-category'           : 'onDeleteCategoryClick',
+        'click a.btn-add-category'              : 'onAddCategoryClick',
+        'click .categories-list li .nav-body'   : 'onSelectCategory'
     },
 
     /**

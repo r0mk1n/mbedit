@@ -1,5 +1,6 @@
 /**
  * Created by r0mk1n on 02-Apr-16.
+ * Categories model
  */
 
 var Category = Backbone.Model.extend({
@@ -10,6 +11,4 @@ var Category = Backbone.Model.extend({
     },
 
     idAttribute     : '_id',
-
-    //url             : '/categories'
 });
