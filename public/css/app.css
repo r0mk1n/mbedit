@@ -59,6 +59,29 @@
     border:none;
 }
 
+/* levels view */
+.levels-view {
+    position:fixed;
+    left: 230px;
+    top: 50px;
+    bottom: 0;
+    right: 0;
+}
+.levels-placeholder {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 36px;
+}
+.levels-toolbar {
+    position:fixed;
+    left: 230px;
+    bottom: 0;
+    right: 0;
+    height: 36px;
+    background: rgba(51, 51, 51, 0.2);
+}
 /* modal */
 .modal-header .close {
     color: #fff;
@@ -123,4 +146,22 @@
 }
 .form-control {
     color: #666;
+}
+
+/* override some alertify styles */
+
+.alertify-notifier .ajs-message {
+    background: rgba(255, 255, 255, 0.95);
+    color: #000;
+    text-align: left;
+    font-size: 13px;
+    font-weight: lighter;
+    border: 0;
+    border-radius: 0;
+    box-shadow: 0 0 50px -10px rgba(0,0,0,.3);
+}
+.alertify-notifier .ajs-message.ajs-success,
+.alertify-notifier .ajs-message.ajs-error,
+.alertify-notifier .ajs-message.ajs-warning {
+    text-shadow: none;
 }

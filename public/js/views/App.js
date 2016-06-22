@@ -6,19 +6,15 @@
  */
 var AppView = Backbone.View.extend({
     initialize: function() {
-
-        //var oldCollectionFetch = Backbone.Collection.prototype.fetch;
-        //
-        //Backbone.Collection.prototype.fetch = function(options) {
-        //    this.trigger("fetch:started");
-        //    oldCollectionFetch.call(this, options);
-        //};
+        var that = this;
 
         this.toolbarView = new ToolbarView({el: this.el});
         this.categoriesView = new CategoriesView({el: this.el});
 
+        this.levelsView = new LevelsView({el:this.el});
+
         this.categoriesView.on( 'Category.SELECT', function( params ) {
-            console.log( params );
+            that.levelsView.load( params.category_id );
         });
     }
 });

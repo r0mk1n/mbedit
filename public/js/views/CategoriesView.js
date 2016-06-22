@@ -38,9 +38,6 @@ var CategoriesView = Backbone.View.extend({
         // create categories model
         this.Categories = new CategoriesCollection();
         this.listenTo( this.Categories, 'sync', this.render );
-        //this.listenTo( this.Categories, 'all', function( data ) {
-        //    console.log(data);
-        //} );
 
         $(document).on('click', '#categorySaveBtn', function() {
             self.saveCategory();
@@ -107,8 +104,10 @@ var CategoriesView = Backbone.View.extend({
      */
     selectCategory: function( category_id ) {
         this.trigger( 'Category.SELECT', {category_id: category_id} );
+
         // clean prev selected category
         $('.categories-list li').removeClass('active');
+
         // adding 'active' class to selected category
         $('.categories-list li[data-category-id='+category_id+']').addClass('active');
     },
@@ -173,13 +172,14 @@ var CategoriesView = Backbone.View.extend({
         this.$editModal.modal('show');
     },
 
-
+    /**
+     * Handling click to category item
+     * @param event
+     */
     onSelectCategory: function( event ) {
         var category_id = $(event.currentTarget).closest('li').attr('data-category-id');
         this.selectCategory( category_id );
     },
-
-
 
     /**
      * Event handlers

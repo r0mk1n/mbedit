@@ -11,19 +11,12 @@ module.exports = function( app, express ) {
     // level model
     var Level = require('../models/level');
 
-    // error message hook
-    router.route( '/' )
-        .all( function( req, res, next ) {
-            res.status( 403 ).json( { message: 'Category_id must be specified' } );
-        });
-
-    // processing get request wih category ID
+    // processing get request with category ID
     router.route( '/:category_id' )
+        // middleware for checking required params
         .all( function( req, res, next ) {
-            var category_id = req.params.category_id;
-
-            if ( category_id ) {
-                req.category_id = category_id;
+            if ( req.params.category_id ) {
+                req.category_id = req.params.category_id;
                 next();
             } else {
                 res.status( 403 ).json( { message: 'Category_id must be specified' } );

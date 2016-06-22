@@ -1,5 +1,5 @@
 /**
- * Categories collection
+ * Levels collection
  */
 
 var LevelsCollection = Backbone.Collection.extend({
