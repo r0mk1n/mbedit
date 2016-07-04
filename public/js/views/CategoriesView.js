@@ -1,31 +1,44 @@
 /**
  * Categories view
  * Manage categories list
+ *
+ * @author @r0mk1n
  */
 
 var CategoriesView = Backbone.View.extend({
+    /**
+     * App handler
+     */
+    app                     : null,
 
     /**
      * Categories list handler
      */
-    $categoriesList     : null,
+    $categoriesList         : null,
 
     /**
      * Edit modal handler
      */
-    $editModal          : null,
+    $editModal              : null,
 
     /**
      * Categories collection
      */
-    Categories          : null,
+    Categories              : null,
+
+    /**
+     * Selected category
+     */
+    selected_category_id    : null,
 
     /**
      * Initialize categories view
      * @param el
      */
-    initialize: function() {
+    initialize: function( options ) {
         var self = this;
+
+        this.app = options.app;
 
         // create sidebar
         this.$el.append( _.template( this.templates.categories_list ) );
@@ -59,7 +72,13 @@ var CategoriesView = Backbone.View.extend({
             for ( var i = 0; i < data.length; i++ ) {
                 this.$categoriesList.append( this.renderItem( data[i] ) );
             }
+
+            // select first category if not yet selected
+            if ( !this.selected_category_id ) {
+                this.selectCategory( data[0]['_id'] );
+            }
         }
+
     },
 
     /**
@@ -103,6 +122,8 @@ var CategoriesView = Backbone.View.extend({
      * @param category_id
      */
     selectCategory: function( category_id ) {
+        this.selected_category_id = category_id;
+
         this.trigger( 'Category.SELECT', {category_id: category_id} );
 
         // clean prev selected category
@@ -113,6 +134,7 @@ var CategoriesView = Backbone.View.extend({
     },
 
     // event handlers //////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Edit category click handler
      * @param event

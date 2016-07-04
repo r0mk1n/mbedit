@@ -1,8 +1,15 @@
 /**
- * Created by r0mk1n on 19-May-16.
+ * Level list view
+ * @author @r0mk1n
+ *
  */
 
 var LevelsView = Backbone.View.extend({
+    /**
+     * App handler
+     */
+    app             : null,
+
     /**
      * Current category_id
      */
@@ -11,24 +18,20 @@ var LevelsView = Backbone.View.extend({
     /**
      * Levels collection
      */
-    Levels          : null,
+    Levels              : null,
 
-    /**
-     * Handler for level modal
-     */
-    $levelModal     : null,
+    levelEditView       : null,
 
-    initialize: function() {
+    initialize: function( options ) {
         var self = this;
+
+        this.app = options.app;
 
         // create toolbar
         this.$el.append( _.template( this.templates.body ) );
         this.$levelsPlaceholder = $('#levels-placeholder');
 
-        // create modal
-        this.$el.append( _.template( this.templates.modal ) );
-        this.$levelModal = $('#LevelModal');
-
+        this.levelEditView = new LevelEditView({app: this.app, el: 'body' });
 
         this.Levels = new LevelsCollection();
         this.listenTo( this.Levels, 'sync', this.render );
@@ -67,14 +70,31 @@ var LevelsView = Backbone.View.extend({
             alertify.error( 'Please select section first' );
             return;
         }
-        this.$levelModal.modal('show');
+
+        this.levelEditView.show(
+            {
+                category_id: this.category_id
+            },
+            function( level_data ) {
+
+            }
+        );
     },
 
+    /**
+     * Events
+     */
     events: {
         'click a.btn-add-level' : 'onAddLevelClick'
     },
 
+    /**
+     * Templates
+     */
     templates: {
+        /**
+         * Levels list
+         */
         body: '<div class="levels-view" id="levels-view">' +
             '<div class="levels-placeholder" id="levels-placeholder"></div>' +
             '<div class="buttons-bar levels-toolbar">' +
@@ -86,23 +106,11 @@ var LevelsView = Backbone.View.extend({
                 '</div>' +
             '</div>' +
         '</div>',
-        modal: '' +
-        '<div class="modal fade" id="LevelModal" tabindex="-1" role="dialog" aria-labelledby="levelModalLabel">' +
-            '<div class="modal-dialog" role="document">' +
-                '<div class="modal-content">' +
-                    '<div class="modal-header">' +
-                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
-                        '<h4 class="modal-title" id="levelModalLabel">Modal title</h4>' +
-                    '</div>' +
-                    '<div class="modal-body">' +
-                    '</div>' +
-                    '<div class="modal-footer">' +
-                        '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
-                        '<button type="button" class="btn btn-primary" id="levelSaveBtn">Save changes</button>' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-        '</div>' +
+
+        /**
+         * Level item
+         */
+        level_item: '' +
         ''
     }
 });
