@@ -48,7 +48,7 @@
     margin: 0 0 3px;
     font-size: 14px;
     line-height: 16px;
-    color: #444s;
+    /*color: #444;*/
     font-weight: bold;
 }
 .side-nav .nav li:hover, .side-nav .nav li.active, .side-nav .nav li.active:hover {
@@ -61,8 +61,12 @@
     height:22px;
 }
 .btn {
+    /*border-radius: 0;*/
+    /*border:none;*/
+    background-image: none;
+}
+.side-nav .btn, .levels-view .btn {
     border-radius: 0;
-    border:none;
 }
 
 /* levels view */
@@ -86,7 +90,7 @@
     left: 250px;
     bottom: 0;
     right: 0;
-    height: 32px;
+    height: 34px;
     background: rgba(51, 51, 51, 0.2);
 }
 /* modal */

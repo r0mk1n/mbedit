@@ -237,12 +237,12 @@ var CategoriesView = Backbone.View.extend({
         category_item: '' +
             '<li data-category-id="<%= _id %>">' +
                 '<div class="btn-group pull-right">' +
-                    '<a class="btn btn-xs btn-primary btn-edit-category"><i class="fa fa-edit"></i></a><br>' +
-                    '<a class="btn btn-xs btn-danger btn-delete-category"><i class="fa fa-remove"></i></a>' +
+                    '<a class="btn btn-xs btn-primary btn-edit-category" title="Edit category"><i class="fa fa-edit"></i></a><br>' +
+                    '<a class="btn btn-xs btn-danger btn-delete-category" title="Delete category"><i class="fa fa-remove"></i></a>' +
                 '</div>' +
                 '<div class="nav-body">' +
                     '<h4><%= name %></h4>' +
-                    '<%= alias %>' +
+                    '#<%= alias %>' +
                 '</div>' +
             '</li>' +
         '',
