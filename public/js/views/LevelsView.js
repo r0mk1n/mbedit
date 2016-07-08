@@ -71,10 +71,12 @@ var LevelsView = Backbone.View.extend({
             return;
         }
 
+        var level = new Level(),
+            attributes = _.clone( level.attributes );
+
+            attributes.category_id = this.category_id;
         this.levelEditView.show(
-            {
-                category_id: this.category_id
-            },
+            attributes,
             function( level_data ) {
 
             }

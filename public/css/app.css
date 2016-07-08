@@ -319,6 +319,9 @@
 .form-control {
     color: #666;
 }
+.modal-footer .form-control, .modal-footer .form-group {
+    margin: 0;
+}
 
 /* override some alertify styles */
 

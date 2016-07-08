@@ -41,6 +41,27 @@ var LevelEditView = Backbone.View.extend({
 
     selected_color          : 0,
 
+    // grid styles ////////////////////
+
+    // base line
+    gridBaseLineWidth       : .3,
+    gridBaseLineColor       : "#333",
+    gridBaseLineDash        : [1,2],
+
+    gridSectorLineWidth     : .5,
+    gridSectorLineColor     : "#999",
+    gridSectorLineDash      : [0],
+
+    cursorFillStyle         : "rgba(0,0,127, .1)",
+
+    // end grid styles ////////////////
+
+    redrawInterval          : -1,
+    redrawDelay             : 100,
+    is_showed               : false,
+
+    selectedCell            : [-1, -1],
+
     /**
      * Override from Backbone.View
      */
@@ -52,6 +73,10 @@ var LevelEditView = Backbone.View.extend({
         // create modal
         this.$el.append( _.template( this.templates.modal ) );
         this.$levelModal = $('#LevelModal');
+
+        this.$levelModal.on('hidden.bs.modal', function (e) {
+            self.hide();
+        });
 
         this.$levelModalTitle = $('#levelModalLabel');
 
@@ -80,9 +105,23 @@ var LevelEditView = Backbone.View.extend({
             self.__updateCursorPosition( event.offsetX, event.offsetY );
         });
 
+        this.$canvas.on( 'mouseleave', function( event ) {
+            self.__resetCursorPositions();
+        });
+
         this.$canvas.on( 'click', function( event ) {
 
         });
+
+        this.__resetCursorPositions();
+
+        // animation cycle
+        this.redrawInterval = setInterval(
+            function() {
+                self.redraw();
+            },
+            this.redrawDelay
+        );
 
     },
 
@@ -94,6 +133,8 @@ var LevelEditView = Backbone.View.extend({
     show: function( data, callback ) {
         this.data = data;
         this.callback = callback;
+
+        console.log(this.data);
 
         var category_data = this.app.getCategoryInfoById( data.category_id );
         var categoris_list = this.app.getCategoriesList();
@@ -111,16 +152,80 @@ var LevelEditView = Backbone.View.extend({
         this.__selectColor(0);
 
         this.$levelModal.modal('show');
+
+        this.is_showed = true;
     },
 
     /**
      * Hide level editor
      */
     hide: function() {
-
+        this.is_showed = false;
     },
 
     // private /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    redraw: function() {
+        if ( this.is_showed ) {
+            this.ctx.clearRect( 0, 0, this.cw, this.ch );
+            this.__drawGrid();
+            this.__drawCursor();
+        }
+    },
+
+    __markCell: function() {
+        if ( this.selectedCell[0] == -1 && this.selectedCell[1] == -1 ) {
+            return;
+        }
+
+    },
+
+    __drawCursor: function() {
+        if ( this.selectedCell[0] == -1 && this.selectedCell[1] == -1 ) {
+            return;
+        }
+        this.ctx.fillStyle = this.cursorFillStyle;
+        this.ctx.fillRect( this.selectedCell[0] * this.cellXSize, this.selectedCell[1] * this.cellYSize, this.cellXSize, this.cellYSize );
+    },
+
+    /**
+     * Draw cells on canvas
+     * @private
+     */
+    __drawGrid: function() {
+        // base lines
+        this.ctx.beginPath();
+
+        for ( var i = 1; i <= 9; i++ ) {
+            this.ctx.moveTo( 0, i * this.cellYSize );
+            this.ctx.lineTo( this.cw, i * this.cellYSize );
+
+            this.ctx.moveTo( i * this.cellXSize, 0 );
+            this.ctx.lineTo( i * this.cellXSize, this.cw );
+        }
+
+        this.ctx.strokeStyle = this.gridBaseLineColor;
+        this.ctx.setLineDash( this.gridBaseLineDash );
+        this.ctx.lineWidth = this.gridBaseLineWidth;
+
+        this.ctx.stroke();
+
+        // sector lines
+        this.ctx.beginPath();
+
+        this.ctx.moveTo( 0, 5 * this.cellYSize );
+        this.ctx.lineTo( this.cw, 5 * this.cellYSize );
+
+        this.ctx.moveTo( 5 * this.cellXSize, 0 );
+        this.ctx.lineTo( 5 * this.cellXSize, this.cw );
+
+        this.ctx.strokeStyle = this.gridSectorLineColor;
+        this.ctx.setLineDash( this.gridSectorLineDash );
+        this.ctx.lineWidth = this.gridSectorLineWidth;
+
+        this.ctx.stroke();
+
+    },
 
     __selectColor: function( color_index ) {
         this.selected_color = color_index;
@@ -129,9 +234,16 @@ var LevelEditView = Backbone.View.extend({
     },
 
     __updateCursorPosition: function( x, y ) {
-        this.$levelCursorPosition.html( '[ ' + this.__pad( Math.round( x / this.cellXSize ) ) + ' - ' + this.__pad( Math.round( y / this.cellYSize ) ) + ' ]' );
+        var __x = Math.ceil( x / this.cellXSize ) - 1,
+            __y = Math.ceil( y / this.cellYSize ) - 1;
+        this.$levelCursorPosition.html( '[ ' + this.__pad( __x + 1 ) + ' - ' + this.__pad( __y + 1 ) + ' ]' );
+        this.selectedCell = [__x, __y];
     },
 
+    __resetCursorPositions: function() {
+        this.$levelCursorPosition.html( '[ XX - XX ]' );
+        this.selectedCell = [-1, -1];
+    },
 
     __pad: function( n ) {
         return (n < 10) ? ("0" + n) : n;
@@ -155,6 +267,7 @@ var LevelEditView = Backbone.View.extend({
                         '<h4 class="modal-title" id="levelModalLabel">Modal title</h4>' +
                     '</div>' +
                     '<div class="modal-body">' +
+
                         '<div class="row">' +
                             '<div class="col-md-11">' +
                                 '<div class="level-toolbar"></div>'+
@@ -167,8 +280,19 @@ var LevelEditView = Backbone.View.extend({
                         '</div>'+
                     '</div>' +
                     '<div class="modal-footer">' +
-                        '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
-                        '<button type="button" class="btn btn-primary" id="levelSaveBtn">Save changes</button>' +
+                        '<div class="row">' +
+                            '<div class="col-xs-4 col-md-4"></div>' +
+                            '<div class="col-xs-4 col-md-4">' +
+                                '<div class="form-group">' +
+                                    '<input id="level-order-id" class="form-control" type="number" placeholder="OrderID">' +
+                                '</div>' +
+                            '</div>' +
+
+                            '<div class="col-xs-4 col-md-4">' +
+                                '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
+                                '<button type="button" class="btn btn-primary" id="levelSaveBtn">Save changes</button>' +
+                            '</div>' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>' +

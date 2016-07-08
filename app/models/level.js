@@ -10,9 +10,10 @@ var Schema = mongoose.Schema;
 
 // schema for categories table
 var LevelSchema = new Schema({
-    data        : String,
-    category_id : String,
-    order_id    : Number
+    colors_count    : Number,
+    colors_data     : Array,
+    category_id     : String,
+    order_id        : Number
 });
 
 module.exports = mongoose.model( 'Level', LevelSchema );

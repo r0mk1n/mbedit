@@ -105,16 +105,27 @@ var CategoriesView = Backbone.View.extend({
         if ( $('#category-id').val() ) {
             data._id = $('#category-id').val();
             var category = this.Categories.get( data._id );
-            category.set( data );
-            result = category.save();
+            //category.set( data );
+            result = category.save( data, {
+                success: function() {
+                    self.onCategorySaved();
+                }
+            } );
         } else {
-            result = this.Categories.add( data ).save();
+            result = this.Categories.add( data ).save( data, {
+                success: function() {
+                    self.onCategorySaved();
+                }
+            });
         }
 
         if ( result ) {
-            self.$editModal.modal('hide');
-            self.Categories.fetch();
         }
+    },
+
+    onCategorySaved: function() {
+        this.$editModal.modal('hide');
+        this.Categories.fetch();
     },
 
     /**
@@ -122,6 +133,10 @@ var CategoriesView = Backbone.View.extend({
      * @param category_id
      */
     selectCategory: function( category_id ) {
+        if ( this.selected_category_id == category_id ) {
+            return ;
+        }
+
         this.selected_category_id = category_id;
 
         this.trigger( 'Category.SELECT', {category_id: category_id} );
