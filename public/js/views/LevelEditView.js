@@ -52,7 +52,21 @@ var LevelEditView = Backbone.View.extend({
     gridSectorLineColor     : "#999",
     gridSectorLineDash      : [0],
 
-    cursorFillStyle         : "rgba(0,0,127, .1)",
+	cursorBorderColor       : "rgba( 0, 0, 0, .8 )",
+	cursorBorderWidth       : .5,
+	cursorColors            : [
+		"rgba( 127, 127, 127, .1)",
+		"rgba( 204, 0, 0, .5 )",
+		"rgba( 102, 153, 0, .5 )",
+		"rgba( 51, 51, 153, .5 )",
+		"rgba( 255, 204, 51, .5 )",
+		"rgba( 255, 102, 0, .5 )",
+		"rgba( 0, 102, 204, .5 )",
+		"rgba( 234, 76, 137, .5 )",
+		"rgba( 75, 75, 75, .5 )",
+		"rgba( 255, 255, 255, .5 )"
+	],
+
 
     // end grid styles ////////////////
 
@@ -61,6 +75,8 @@ var LevelEditView = Backbone.View.extend({
     is_showed               : false,
 
     selectedCell            : [-1, -1],
+
+
 
     /**
      * Override from Backbone.View
@@ -184,8 +200,13 @@ var LevelEditView = Backbone.View.extend({
         if ( this.selectedCell[0] == -1 && this.selectedCell[1] == -1 ) {
             return;
         }
-        this.ctx.fillStyle = this.cursorFillStyle;
+	    this.ctx.fillStyle = this.cursorColors[this.selected_color];//this.cursorFillStyle;
         this.ctx.fillRect( this.selectedCell[0] * this.cellXSize, this.selectedCell[1] * this.cellYSize, this.cellXSize, this.cellYSize );
+	    this.ctx.beginPath();
+	    this.ctx.rect( this.selectedCell[0] * this.cellXSize, this.selectedCell[1] * this.cellYSize, this.cellXSize, this.cellYSize );
+	    this.ctx.strokeStyle = this.cursorBorderColor;
+	    this.ctx.lineWidth = this.cursorBorderWidth;
+	    this.ctx.stroke();
     },
 
     /**

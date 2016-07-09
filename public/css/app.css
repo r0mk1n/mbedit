@@ -420,15 +420,15 @@
     color: #fff;
 }
 /*.color-0:hover {color: #eee}*/
-.color-1 { background-color: #CC0000  }
-.color-2 { background-color: #669900  }
-.color-3 { background-color: #333399 }
-.color-4 { background-color: #FFCC33  }
-.color-5 { background-color: #FF6600 }
-.color-6 { background-color: #0066cc  }
-.color-7 { background-color: #EA4C89 }
-.color-8 { background-color: #4b4b4b  }
-.color-9 { background-color: #ffffff  }
+.color-1 { background-color: rgba( 204, 0, 0, 1 );  }
+.color-2 { background-color: rgba( 102, 153, 0, 1 );  }
+.color-3 { background-color: rgba( 51, 51, 153, 1 ); }
+.color-4 { background-color: rgba( 255, 204, 51, 1 );  }
+.color-5 { background-color: rgba( 255, 102, 0, 1 ); }
+.color-6 { background-color: rgba( 0, 102, 204, 1 );  }
+.color-7 { background-color: rgba( 234, 76, 137, 1 ); }
+.color-8 { background-color: rgba( 75, 75, 75, 1 );  }
+.color-9 { background-color: rgba( 255, 255, 255, 1 );  }
 
 /*==================================================
  * Effect 1
