@@ -71,11 +71,13 @@ var LevelEditView = Backbone.View.extend({
     // end grid styles ////////////////
 
     redrawInterval          : -1,
-    redrawDelay             : 100,
+    redrawDelay             : 10,
     is_showed               : false,
 
     selectedCell            : [-1, -1],
 
+    no_color_pattern        : null,
+    colors_patterns         : {},
 
 
     /**
@@ -116,6 +118,10 @@ var LevelEditView = Backbone.View.extend({
             self.__selectColor( $(this).attr('data-color-id') );
         });
 
+        // create no-color pattern
+        this.__createNoColorPattern();
+        this.__createColorsPatterns();
+
         // add event listeners
         this.$canvas.on( 'mousemove', function( event ) {
             self.__updateCursorPosition( event.offsetX, event.offsetY );
@@ -126,7 +132,7 @@ var LevelEditView = Backbone.View.extend({
         });
 
         this.$canvas.on( 'click', function( event ) {
-
+            self.__markCell();
         });
 
         this.__resetCursorPositions();
@@ -170,6 +176,7 @@ var LevelEditView = Backbone.View.extend({
         this.$levelModal.modal('show');
 
         this.is_showed = true;
+
     },
 
     /**
@@ -186,6 +193,7 @@ var LevelEditView = Backbone.View.extend({
             this.ctx.clearRect( 0, 0, this.cw, this.ch );
             this.__drawGrid();
             this.__drawCursor();
+            this.__drawColors();
         }
     },
 
@@ -194,19 +202,46 @@ var LevelEditView = Backbone.View.extend({
             return;
         }
 
+        var index = this.selectedCell[1] * 10 + this.selectedCell[0];
+
+        if ( parseInt( this.data.colors_data[index] ) == this.selected_color ) {
+            this.data.colors_data[index] = 0;
+        } else {
+            this.data.colors_data[index] = this.selected_color;
+        }
     },
 
     __drawCursor: function() {
         if ( this.selectedCell[0] == -1 && this.selectedCell[1] == -1 ) {
             return;
         }
-	    this.ctx.fillStyle = this.cursorColors[this.selected_color];//this.cursorFillStyle;
-        this.ctx.fillRect( this.selectedCell[0] * this.cellXSize, this.selectedCell[1] * this.cellYSize, this.cellXSize, this.cellYSize );
-	    this.ctx.beginPath();
-	    this.ctx.rect( this.selectedCell[0] * this.cellXSize, this.selectedCell[1] * this.cellYSize, this.cellXSize, this.cellYSize );
-	    this.ctx.strokeStyle = this.cursorBorderColor;
-	    this.ctx.lineWidth = this.cursorBorderWidth;
-	    this.ctx.stroke();
+        if ( this.selected_color > 0 ) {
+            this.ctx.fillStyle = this.cursorColors[this.selected_color];
+            this.ctx.fillRect( this.selectedCell[0] * this.cellXSize, this.selectedCell[1] * this.cellYSize, this.cellXSize, this.cellYSize );
+            this.ctx.beginPath();
+            this.ctx.rect( this.selectedCell[0] * this.cellXSize, this.selectedCell[1] * this.cellYSize, this.cellXSize, this.cellYSize );
+            this.ctx.strokeStyle = this.cursorBorderColor;
+            this.ctx.lineWidth = this.cursorBorderWidth;
+            this.ctx.stroke();
+        } else {
+            // draw striped BG
+            this.ctx.rect( this.selectedCell[0] * this.cellXSize, this.selectedCell[1] * this.cellYSize, this.cellXSize, this.cellYSize );
+            this.ctx.fillStyle = this.no_color_pattern;
+            this.ctx.fill();
+        }
+    },
+
+    __drawColors: function() {
+        for( var y = 0; y < 10; y++ ) {
+            for ( var x = 0; x < 10; x++ ) {
+                if ( typeof this.data.colors_data[y*10+x] !== "undefined" && parseInt( this.data.colors_data[y*10+x] ) > 0 ) {
+                    this.ctx.rect( x * this.cellXSize, y * this.cellYSize, this.cellXSize, this.cellYSize );
+                    //this.ctx.fillStyle = this.cursorColors[parseInt( this.data.colors_data[y*10+x] )];
+                    this.ctx.fillStyle = this.colors_patterns[parseInt( this.data.colors_data[y*10+x] )];
+                    this.ctx.fill();
+                }
+            }
+        }
     },
 
     /**
@@ -268,6 +303,31 @@ var LevelEditView = Backbone.View.extend({
 
     __pad: function( n ) {
         return (n < 10) ? ("0" + n) : n;
+    },
+
+    __createNoColorPattern: function() {
+        var imageObj = new Image();
+        var self = this;
+        imageObj.onload = function() {
+            self.no_color_pattern = self.ctx.createPattern(imageObj, 'repeat');
+        };
+        imageObj.src = '/img/stripe.png';
+    },
+
+    __createColorsPatterns: function() {
+        var images = {};
+        var self = this;
+        for ( var i = 1; i <= 9; i++ ) {
+            images[i] = new Image();
+            images[i].colorIndex = i;
+
+            images[i].onload = function() {
+                self.colors_patterns[this.colorIndex] = self.ctx.createPattern( images[this.colorIndex], 'no-repeat');
+                console.log(self.colors_patterns);
+            };
+            images[i].src = '/img/color-'+i+'.png';
+        }
+
     },
     // events handlers /////////////////////////////////////////////////////////////////////////////////////////////////
 
