@@ -236,8 +236,8 @@ var LevelEditView = Backbone.View.extend({
             for ( var x = 0; x < 10; x++ ) {
                 if ( typeof this.data.colors_data[y*10+x] !== "undefined" && parseInt( this.data.colors_data[y*10+x] ) > 0 ) {
                     this.ctx.rect( x * this.cellXSize, y * this.cellYSize, this.cellXSize, this.cellYSize );
-                    //this.ctx.fillStyle = this.cursorColors[parseInt( this.data.colors_data[y*10+x] )];
-                    this.ctx.fillStyle = this.colors_patterns[parseInt( this.data.colors_data[y*10+x] )];
+                    this.ctx.fillStyle = this.cursorColors[parseInt( this.data.colors_data[y*10+x] )];
+                    //this.ctx.fillStyle = this.colors_patterns[parseInt( this.data.colors_data[y*10+x] )];
                     this.ctx.fill();
                 }
             }
@@ -322,7 +322,7 @@ var LevelEditView = Backbone.View.extend({
             images[i].colorIndex = i;
 
             images[i].onload = function() {
-                self.colors_patterns[this.colorIndex] = self.ctx.createPattern( images[this.colorIndex], 'no-repeat');
+                self.colors_patterns[this.colorIndex] = self.ctx.createPattern( images[this.colorIndex], 'repeat');
                 console.log(self.colors_patterns);
             };
             images[i].src = '/img/color-'+i+'.png';
